@@ -61,3 +61,4 @@ jobs:
         data = res.read()
         print(data.decode("utf-8"))
         EOF
+        python3 checkin.py
