@@ -55,7 +55,7 @@ jobs:
           'sec-fetch-mode': 'cors',
           'sec-fetch-site': 'same-origin',
           'user-agent': 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36',
-          'Cookie': 'koa:sess=eyJ1c2VySWQiOjcyNDgyMiwiX2V4cGlyZSI6MTgwNzQ1Mzk5MzQxMywiX21heEFnZSI6MjU5MjAwMDAwMDB9; koa:sess.sig=ctAMRtZayE0bKxZ__A-7dHr1xqc'
+          'Cookie': 'koa:sess=eyJ1c2VySWQiOjUwMzQ1NywiX2V4cGlyZSI6MTgwODAzNDQzMDU2MCwiX21heEFnZSI6MjU5MjAwMDAwMDB9; koa:sess.sig=fd9u_4X3Aj4n4LpqpGX49mWVbTs'
         }
         conn.request("POST", "/api/user/checkin", payload, headers)
         res = conn.getresponse()
