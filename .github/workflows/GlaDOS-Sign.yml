@@ -1,65 +1,32 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Python application
+name: GLaDOS Checkin
 
 on:
   schedule:
-    - cron: "30 7 * * *"
-      timezone: "Asia/Shanghai"
-  # 可选：手动点运行测试
+    # ⚠️ GitHub Actions 的 cron 按 UTC 解释
+    # UTC 23:30 = 北京时间次日 07:30
+    - cron: "30 23 * * *"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  build:
-
+  checkin:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Sign
-      run: |
-        cat > checkin.py << 'EOF'
-        import http.client
-
-        conn = http.client.HTTPSConnection("glados.cloud")
-        payload = "{\"token\":\"glados.cloud\"}"
-        headers = {
-          'accept': 'application/json, text/plain, */*',
-          'accept-language': 'en,zh-CN;q=0.9,zh;q=0.8,zh-TW;q=0.7,ja;q=0.6',
-          'content-type': 'application/json;charset=UTF-8',
-          'origin': 'https://glados.cloud',
-          'priority': 'u=1, i',
-          'sec-ch-ua': '"Google Chrome";v="149", "Chromium";v="149", "Not)A;Brand";v="24"',
-          'sec-ch-ua-mobile': '?1',
-          'sec-ch-ua-platform': '"Android"',
-          'sec-fetch-dest': 'empty',
-          'sec-fetch-mode': 'cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent': 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36',
-          'Cookie': 'koa:sess=eyJ1c2VySWQiOjUwMzQ1NywiX2V4cGlyZSI6MTgwODAzNDQzMDU2MCwiX21heEFnZSI6MjU5MjAwMDAwMDB9; koa:sess.sig=fd9u_4X3Aj4n4LpqpGX49mWVbTs; gld:sess=gld_917a4cec7eb8c9e3a1affcbf3561fbc2a75726dd071f6ad3; gld:sess.sig=QGNYZE1gEjPBlzEvAE86xmPTLT4'
-        }
-        conn.request("POST", "/api/user/checkin", payload, headers)
-        res = conn.getresponse()
-        data = res.read()
-        print(data.decode("utf-8"))
-        EOF
-        python3 checkin.py
+      - name: GLaDOS auto checkin
+        env:
+          GLADOS_COOKIE: ${{ secrets.GLADOS_COOKIE }}
+        run: |
+          echo "===== 开始签到 ====="
+          curl -sS -X POST "https://glados.cloud/api/user/checkin" \
+            -H "accept: application/json, text/plain, */*" \
+            -H "accept-language: zh-CN,zh;q=0.9,en;q=0.8" \
+            -H "content-type: application/json;charset=UTF-8" \
+            -H "origin: https://glados.cloud" \
+            -H "referer: https://glados.cloud/console/checkin" \
+            -H "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36" \
+            -H "Cookie: $GLADOS_COOKIE" \
+            -d '{}'
+          echo ""
+          echo "===== 签到完成 ====="
