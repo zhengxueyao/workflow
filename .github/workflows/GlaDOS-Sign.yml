@@ -17,6 +17,7 @@ jobs:
       - name: GLaDOS auto checkin
         env:
           GLADOS_COOKIE: ${{ secrets.GLADOS_COOKIE }}
+          GLADOS_USER_AGENT: ${{ secrets.GLADOS_USER_AGENT }}
         run: |
           echo "===== 开始签到 ====="
           curl -sS -X POST "https://glados.cloud/api/user/checkin" \
@@ -25,7 +26,7 @@ jobs:
             -H "content-type: application/json;charset=UTF-8" \
             -H "origin: https://glados.cloud" \
             -H "referer: https://glados.cloud/console/checkin" \
-            -H "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36" \
+            -H "user-agent: $GLADOS_USER_AGENT" \
             -H "Cookie: $GLADOS_COOKIE" \
             -d '{}'
           echo ""
